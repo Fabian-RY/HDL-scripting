@@ -13,5 +13,5 @@ data$X <- NULL
 heatmap <- pheatmap(data)
 
 svg(out_path)
-heatmap()
+heatmap
 dev.off()

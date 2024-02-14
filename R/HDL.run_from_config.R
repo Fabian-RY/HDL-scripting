@@ -151,5 +151,5 @@ args <- commandArgs(trailingOnly = TRUE)
 check_package_version(data.table_minimum_version, package) # Necesita data.table 1.12.1 o superior
 
 #info <- process_args() # -- TO DO
-info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/downloads/new_config.txt")
+info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/datasets_WP1/config.txt")
 apply(info, 1, calc_correlation)
