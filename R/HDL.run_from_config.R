@@ -92,7 +92,9 @@ get_min_SNP <- function(gwas1, gwas2){
 # Función principar para realizar el HDL. Utiliza los argumentos recibidos en el config
 # Después, escribe el resultado
 perform_HDL <- function(gwas1, gwas2, LD.path, Nref, N0, output.file, eigen.cut, jackknife.df, fill.missing, intercept){
-  res.HDL <- HDL.rg(    gwas1, gwas2, LD.path, Nref, N0, output.file, eigen.cut, jackknife.df, fill.missing, intercept.output = intercept)
+  try(
+    res.HDL <- HDL.rg(    gwas1, gwas2, LD.path, Nref, N0, output.file, eigen.cut, jackknife.df, fill.missing, intercept.output = intercept)
+  )
   # Escribimos el resultado (he hecho un apaño porque arg.lines es un valor por defecto no explicado)
   if(output.file != ""){
     fConn <- file(output.file)
@@ -151,5 +153,5 @@ args <- commandArgs(trailingOnly = TRUE)
 check_package_version(data.table_minimum_version, package) # Necesita data.table 1.12.1 o superior
 
 #info <- process_args() # -- TO DO
-info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/datasets_WP1/config.txt")
+info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/good_datasets/sumstats.conf")
 apply(info, 1, calc_correlation)
