@@ -13,11 +13,12 @@ def parseargs():
         Input file, output file, and which column hold pvalues
 
         in: The input file (path)
-        out: The output file, where filtered variants will be sabed (results overwritten)
+        out: The output file, where filtered variants will be sabed (results overwritten). By default,
+            goes to stdout
         pcol: column index that hold pvalues
         pval: threshold, max p-val to be kept. By default, its 0.05
         sep: separator bewteen cells in the input file. The same one will be used in the output file
-            Incorrect separator will produce an error
+            Incorrect separator will produce an error. By default it's '\t' (tab)
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("-pval", type=float, action="store", dest="pval", default=0.05)
@@ -49,7 +50,7 @@ def filter_by_pvalue(x:float, max_pval:float) -> bool:
         Just checks both are floats and compares them
     """
     pval = float(x)
-    return pval > max_pval
+    return pval < max_pval
 
 def write_significant_variables(significant, outfile, sep) -> None:
     """
@@ -64,10 +65,17 @@ def write_significant_variables(significant, outfile, sep) -> None:
 
 def main():
     args = parseargs()
-    variants:list = list(loadcsv(args.infile, args.sep))
-    significant_variants:list = list(filter(lambda x: filter_by_pvalue(x[args.pcol], args.pval), variants[1:])) # Skip the header, just from 1 to end
-    data = [variants[0]] + significant_variants # variants[0] is the header forget the header!
-    write_significant_variables(data, args.outfile, args.sep) 
+    print("Loading variants")
+    variants:list = loadcsv(args.infile, args.sep)
+    print("Filtering variants")
+    fhandler = gzip.open(args.outfile, WRITE_TO_TEXT)
+    header = next(variants)
+    fhandler.write(args.sep.join(header)+"\n")
+    for v in variants: # Skip the header, just from 1 to end
+        if (float(v[args.pcol]) < args.pval):
+            fhandler.write(args.sep.join(v)+"\n") #Quería hacerlo con la función filter, pero esta no admite generadores.
+        # De esta forma es más eficiente en memoria pero no está tan funcionalizado
+    fhandler.close()
     pass
 
 if __name__ == "__main__":

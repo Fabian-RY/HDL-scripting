@@ -10,11 +10,13 @@ library(HDL)
 library(data.table)
 
 # Constantes
-version <- "0.9" # Versión actual del paquete
+version <- "0.9.1" # Versión actual del paquete
 ## Data.table funciona en el script original con 1.12.1, si no busca esa versión instalada
 ## No he visto motivos suficientes para ello, en este script lo he puesto como warning
 data.table_minimum_version <- "1.12.1"
 package <- "data.table"
+
+cores <- 6
 
 # Solo necesitamos un argumento: el config que contiene todos los parámetros:
 # Dicho config es un csv, disponible un ejemplo template_test.csv en el paquete
@@ -93,7 +95,8 @@ get_min_SNP <- function(gwas1, gwas2){
 # Después, escribe el resultado
 perform_HDL <- function(gwas1, gwas2, LD.path, Nref, N0, output.file, eigen.cut, jackknife.df, fill.missing, intercept){
   try(
-    res.HDL <- HDL.rg(    gwas1, gwas2, LD.path, Nref, N0, output.file, eigen.cut, jackknife.df, fill.missing, intercept.output = intercept)
+    res.HDL <- HDL.rg.parallel(    gwas1, gwas2, LD.path, Nref = Nref, N0 = N0, output.file = output.file, eigen.cut = eigen.cut, jackknife.df = jackknife.df,
+                                   fill.missing = fill.missing, numCores = cores, intercept.output = intercept)
   )
   # Escribimos el resultado (he hecho un apaño porque arg.lines es un valor por defecto no explicado)
   if(output.file != ""){
@@ -139,7 +142,7 @@ calc_correlation <- function(x){
   jackknife <- x[[9]] # Idem
   eigen.cut <- ifelse(length(eigen_cut)==0 || is.na(eigen_cut), "automatic", as.numeric(eigen_cut))
   jackknife.df <- ifelse(length(jackknife)==0 || is.na(jackknife), FALSE, as.logical(jackknife))
-  intercept.output <-FALSE
+  intercept.output <- FALSE
   fill_missing <- x[[10]] # Decide cómo imputar datos faltantes:
                                             # con la mediana del dato, el minimo, el máximo
                                             # Cualquier otra cosa hace que no impute y descarte ese registro
@@ -153,5 +156,5 @@ args <- commandArgs(trailingOnly = TRUE)
 check_package_version(data.table_minimum_version, package) # Necesita data.table 1.12.1 o superior
 
 #info <- process_args() # -- TO DO
-info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/good_datasets/sumstats.conf")
+info <- read.csv("/home/fabian/Escritorio/PhD_data/WP1/good_datasets/rawdata/config.conf")
 apply(info, 1, calc_correlation)
