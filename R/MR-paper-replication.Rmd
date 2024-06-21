@@ -1,0 +1,42 @@
+---
+title: "Mendelian Randomization"
+---
+
+```{r}
+library(MendelianRandomization)
+
+# Generamos el input usando 2 disponibles en la propia librería
+# Estos son los que se usan en el paper
+MRdata_HDL_CHD <- mr_input(bx = hdlc, bxse = hdlcse, by = chdlodds, byse = chdloddsse)
+
+# mr_ivw, mr_egger y mr_median devuelven una estimación, su error estandar e 
+# intervalo de confianza dependiendo de los métodos utilizados,  junto con el 
+# error residual y otros parámetros
+stats <- mr_ivw(MRdata_HDL_CHD)
+egger <- mr_egger(MRdata_HDL_CHD)
+median <- mr_median(MRdata_HDL_CHD)
+
+# mr_allmethods hace la aleatorización con todos los métodos disponibles en el 
+# paquete. También se puede especificar el paquete. En la ayuda pone que se usa
+# all, pero en el paper usan main, que da solo los resultados principales.
+# All da todos los resultados, y se le pueden dar argumentos extra a los métodos
+allmethods <- mr_allmethods(MRdata_HDL_CHD, method = "main")
+
+# De ese resultado se pueden hacer plots
+mr_plot(allmethods)
+
+# Pero también del input
+mr_plot(MRdata_HDL_CHD)
+
+mr_plot(MRdata_HDL_CHD, orientate = TRUE, line = "egger")
+
+path.proxies <- system.file("extdata", "vitD_snps_PhenoScanner_proxies.csv", package = "MendelianRandomization")
+
+# this file has been downloaded from PhenoScanner (v1.1)
+
+extract.pheno.csv(
+  exposure = "log(eGFR creatinine)", pmidE = 26831199, ancestryE = "European",
+  outcome = "Asthma", pmidO = 20860503, ancestryO = "European",
+  rsq.proxy = 0.6, file = path.proxies, snps = "all")
+
+```

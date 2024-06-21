@@ -1,7 +1,6 @@
 #! /usr/bin/env Rscript
 
 library(pheatmap)
-library(peRReo)
 
 args <- commandArgs(trailingOnly = TRUE)
 

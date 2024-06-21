@@ -30,11 +30,11 @@ def parseargs():
 
 def loadcsv(file:str, sep:str):
     """
-        A generator that reads one line at a time from the file, and splits it according
-        to the separator given. 
+        A generator that reads one line at a time from the file, and splits 
+        it according to the separator given. 
         
-        Uses the correct function whether it's compressed in gz or not. It's considered gzipped
-        if has the extension present in GZIP_EXTENSION
+        Uses the correct function whether it's compressed in gz or not. 
+        It's considered gzipped if has the extension present in GZIP_EXTENSION
 
         It's read as text according to the variable READ_AS_TEXT
     """
@@ -73,7 +73,8 @@ def main():
     fhandler.write(args.sep.join(header)+"\n")
     for v in variants: # Skip the header, just from 1 to end
         if (float(v[args.pcol]) < args.pval):
-            fhandler.write(args.sep.join(v)+"\n") #Quería hacerlo con la función filter, pero esta no admite generadores.
+            fhandler.write(args.sep.join(v)+"\n") 
+            #Quería hacerlo con la función filter, pero esta no admite generadores.
         # De esta forma es más eficiente en memoria pero no está tan funcionalizado
     fhandler.close()
     pass
